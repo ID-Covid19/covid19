@@ -14,7 +14,6 @@ import spacy
 import dask.dataframe as dd
 import glob
 import json
-import pickle
 
 
 class PaperFilter(object):
@@ -40,7 +39,8 @@ class PaperFilter(object):
         except:
             # If full paper not found just return empty string
             full_text = ''
-        return row['title'] + '. ' + row['abstract']+'. '+full_text
+        return {"text":row['title'] + '. ' + row['abstract']+'. '+full_text,
+                "doi":row['doi']}
     """
     Returns similarity measure between a keyword to a row in metadata
         row: a row in metadata dataframe
@@ -79,11 +79,12 @@ class PaperFilter(object):
         return metadata[metadata['similarity_score']>similarity_threshold]        
 
 if __name__ == "__main__":
+    spacy.prefer_gpu()
     dataset_dir = sys.argv[1]
     keyword_path = sys.argv[2]
     output_filename = sys.argv[3] 
     similarity_threshold = float(sys.argv[4]) 
-    
+
     # Instantiate PaperFilter object
     all_json = glob.glob(f'{dataset_dir}/**/*.json', recursive=True)
     pp = PaperFilter('en_core_sci_md',all_json)
@@ -94,10 +95,10 @@ if __name__ == "__main__":
         keywords = f.readlines()
     
     # Read metadata input
-    metadata = pd.read_csv(dataset_dir+'/metadata.csv')
+    metadata = pd.read_csv(dataset_dir+'/metadata.csv')[:5]
     
-    # Drop entries without title and abstract
-    metadata.dropna(subset=['abstract','title'], inplace=True)
+    # Drop entries without title, abstract, or doi
+    metadata.dropna(subset=['abstract','title', 'doi'], inplace=True)
     
     # Filter to only paper related to the keywords
     filtered_metadata = pp.filter_metadata_by_keyword(metadata, keywords, similarity_threshold)
@@ -108,8 +109,7 @@ if __name__ == "__main__":
         paper_texts.append(pp.get_text(row))
         
     # Save list of text to a pickle file
-    # To do: receive output filename from args
-    with open(output_filename, 'wb') as fp:
-        pickle.dump(paper_texts, fp)    
+    pd.DataFrame(paper_texts).to_pickle(output_filename)
+
 
 

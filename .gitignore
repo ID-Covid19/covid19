@@ -132,3 +132,7 @@ output/
 input/
 
 .DS_Store
+
+answers/
+
+rc.state
