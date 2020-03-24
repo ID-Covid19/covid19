@@ -95,7 +95,7 @@ if __name__ == "__main__":
         keywords = f.readlines()
     
     # Read metadata input
-    metadata = pd.read_csv(dataset_dir+'/metadata.csv')[:5]
+    metadata = pd.read_csv(dataset_dir+'/metadata.csv')
     
     # Drop entries without title, abstract, or doi
     metadata.dropna(subset=['abstract','title', 'doi'], inplace=True)
