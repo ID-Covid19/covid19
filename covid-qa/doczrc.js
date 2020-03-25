@@ -1,5 +1,7 @@
 export default {
     title: "Covid-19 Publications Q/A",
+    dest: "/build",
+    base: "/qa",
     menu:["Home", "Vaccines and Therapeutics"],
     ignore: [
         'README.md'
