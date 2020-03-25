@@ -1,5 +1,6 @@
 {
   "name": "covid-19-publications-qa",
+  "homepage": "https://id-covid19.github.io/qa/",
   "version": "2.0.0-rc.43",
   "private": true,
   "dependencies": {
